@@ -3,6 +3,7 @@ import random
 from twilio.rest import Client
 import os
 from dotenv import load_dotenv
+import time
 
 
 load_dotenv()
@@ -32,6 +33,9 @@ def sorteio_amigos(amigos):
         amigo_sorteado = random.choice(amigos_possiveis)
         sorteios[pessoa] = amigo_sorteado
         amigos_sorteados.add(amigo_sorteado)
+
+        with open('sorteios.json', 'w', encoding='utf-8') as json_file:
+            json.dump(sorteios, json_file, ensure_ascii=False, indent=4)
     
     return sorteios
 
@@ -53,6 +57,8 @@ for pessoa, amigo in sorteios.items():
         from_=twilio_number,
         to=f'whatsapp:+55{numero}'
     )
+
+    time.sleep(2)
 
     print(f"Mensagem enviada para {pessoa} com sucesso!")
 
