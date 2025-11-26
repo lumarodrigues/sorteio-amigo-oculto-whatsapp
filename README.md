@@ -1,107 +1,150 @@
 # Sorteio de Amigo Oculto via WhatsApp
-Este projeto permite realizar um sorteio de amigo oculto e enviar as mensagens automaticamente via WhatsApp utilizando a API do Twilio.
 
-## Requisitos
-Antes de rodar o projeto, é necessário configurar alguns pré-requisitos:
+Este projeto permite realizar um sorteio de amigo oculto e enviar as mensagens automaticamente via WhatsApp.
 
-- Criar uma conta gratuita no Twilio (é possível entrar com Google Account)
+## Métodos de Envio
+
+O projeto oferece **duas formas** de enviar os resultados:
+
+| Método | Vantagens | Desvantagens |
+|--------|-----------|--------------|
+| **WhatsApp Web** (recomendado) | Simples, sem cadastro, sem limites | Organizador não pode olhar a tela durante envio |
+| **Twilio API** | Totalmente automático | Requer conta Twilio, limite de 24h, configuração complexa |
+
+---
+
+## Método 1: WhatsApp Web (Recomendado)
+
+Este método usa o navegador do organizador para enviar as mensagens automaticamente pelo WhatsApp Web.
+
+### Requisitos
 - Python 3.x
-- Ambiente virtual (opcional, mas recomendado)
+- Google Chrome instalado
+- Conta no WhatsApp
 
-### Passo 1: Criar uma conta no Twilio
-
-#### 1.1. Criar uma conta Twilio
-Acesse o site [Twilio](https://www.twilio.com) e clique em **Sign Up** para criar uma conta.  
-Preencha os campos obrigatórios para registrar sua conta.  
-Após o cadastro, você será redirecionado ao painel de controle.
-
-#### 1.2. Verificação da conta
-Para validar a conta do Twilio, você precisará verificar o seu número de telefone.  
-No painel de controle, insira o número do telefone para o qual deseja enviar mensagens do WhatsApp (esse será o número utilizado como "remetente").
-
-#### 1.3. Obter SID e Auth Token
-Após a criação da conta, você terá acesso ao **Account SID** e **Auth Token**. Eles são fundamentais para autenticação na API do Twilio.  
-Acesse o painel do Twilio e anote o **Account SID** e o **Auth Token** na seção de Dashboard.
-
-#### 1.4. Obter número de WhatsApp do Twilio
-O Twilio oferece um número de WhatsApp para testes em sua conta gratuita.  
-Para obter o número de WhatsApp do Twilio, vá até a seção **Programmable Messaging** e, em seguida, **Try it Out > Send a WhatsApp message**.  
-Você receberá um número de WhatsApp associado à sua conta Twilio.
-
-#### 1.5. Ativar o Sandbox do WhatsApp (opcional)
-Para usar o WhatsApp com o Twilio, você precisa configurar o "WhatsApp Sandbox" no painel do Twilio:
-
-1. Vá até a seção **Messaging** no painel do Twilio.
-2. Em **Sandbox**, siga as instruções para enviar uma mensagem de adesão do WhatsApp para o número fornecido pelo Twilio.  
-   Pode ser adicionando o telefone do Twilio e enviando um código ou escaneando um QR Code.  
-   Certifique-se de que seus amigos que irão participar escaneiem o QR Code para serem verificados pelo Twilio.  
-   Você receberá uma mensagem no WhatsApp confirmando que o número do Twilio foi ativado para uso.
-
-**Atenção:** Durante o período de teste com a conta gratuita, o Twilio só permitirá o envio de mensagens para números que estejam na lista de verificados.
-
-### Passo 2: Clonar o projeto
+### Passo 1: Clonar o projeto
 
 ```bash
 git clone git@github.com:lumarodrigues/sorteio-amigo-oculto-whatsapp.git
+cd sorteio-amigo-oculto-whatsapp
 ```
 
-### Passo 3: Preencher o arquivo amigos.json
-O arquivo amigos.json deve conter como chave o nome do amigo e como valor, o telefone do mesmo. Exemplo:
+### Passo 2: Preencher o arquivo amigos.json
 
-```bash
+O arquivo `amigos.json` deve conter como chave o nome do amigo e como valor, o telefone (DDD + número):
+
+```json
 {
     "Amigo 1": "21990000000",
     "Amigo 2": "21990000000",
-    "Amigo 3": "21990000000",
-    "Amigo 4": "21990000000",
-    "Amigo 5": "21990000000",
-    "Amigo 6": "21990000000",
-    "Amigo 7": "21990000000",
-    "Amigo 8": "21990000000",
-    "Amigo 9": "21990000000"
+    "Amigo 3": "21990000000"
 }
 ```
 
-Sendo os 2 primeiros números nos valores, o DDD do telefone do amigo.
-
-### Passo 4: Criar o ambiente virtual
+### Passo 3: Criar e ativar o ambiente virtual
 
 ```bash
 python3 -m venv .venv
-```
-
-
-### Passo 5: Ativar o ambiente virtual
-
-```bash
 source .venv/bin/activate
 ```
 
-### Passo 6: Instalar dependências
+### Passo 4: Instalar dependências
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Passo 7: Configurar as variáveis de ambiente
+### Passo 5: Realizar o sorteio
 
-Crie um arquivo .env na raiz do projeto, com as seguintes variáveis, de acordo com .env-sample:
+```bash
+python sorteio.py
+```
+
+Este comando gera o arquivo `sorteios.json` com o resultado do sorteio.
+
+### Passo 6: Enviar os resultados via WhatsApp Web
+
+```bash
+python enviar_whatsapp_web.py
+```
+
+**Como funciona:**
+
+1. O navegador Chrome abre automaticamente
+2. Escaneie o QR Code do WhatsApp Web com seu celular
+3. Após logar, aperte Enter no terminal
+4. **VIRE DE COSTAS** - o script vai enviar as mensagens automaticamente
+5. Aguarde até o script finalizar (você verá a mensagem no terminal)
+
+> ⚠️ **Importante:** Como organizador, você NÃO deve olhar para a tela durante o envio, pois as mensagens com os resultados aparecerão na tela. A mensagem enviada possui espaçamento para que o nome do amigo secreto não apareça na pré-visualização do WhatsApp.
+
+---
+
+## Método 2: Twilio API (Alternativo)
+
+Este método usa a API do Twilio para enviar mensagens via WhatsApp de forma totalmente automática.
+
+### Requisitos
+- Conta gratuita no [Twilio](https://www.twilio.com)
+- Python 3.x
+- Todos os participantes devem aderir ao Sandbox do Twilio
+
+### Limitações do Twilio (conta gratuita)
+- Janela de 24 horas: participantes precisam enviar mensagem ao Twilio no mesmo dia
+- Limite de 50 mensagens por dia
+- Todos precisam escanear QR Code do Sandbox
+
+### Configuração do Twilio
+
+#### 1. Criar conta e obter credenciais
+1. Acesse [Twilio](https://www.twilio.com) e crie uma conta
+2. No painel, anote o **Account SID** e **Auth Token**
+3. Vá em **Messaging > Try it Out > Send a WhatsApp message**
+4. Obtenha o número do WhatsApp Sandbox
+
+#### 2. Configurar Sandbox
+1. Vá em **Messaging > Sandbox**
+2. Cada participante deve enviar a mensagem de adesão (ex: `join codigo`) para o número do Twilio
+3. Isso deve ser feito **no mesmo dia** do envio das mensagens
+
+#### 3. Configurar variáveis de ambiente
+
+Crie um arquivo `.env` na raiz do projeto:
 
 ```bash
 ACCOUNT_SID=seu_account_sid_aqui
 AUTH_TOKEN=seu_auth_token_aqui
-TWILIO_NUMBER=whatsapp:+1415500000
+TWILIO_NUMBER=whatsapp:+14155238886
 ```
 
-Substitua seu_account_sid_aqui e seu_auth_token_aqui pelos valores obtidos no painel do Twilio.
-
-Importante: O número whatsapp:+1415500000 é um exemplo de número de WhatsApp fornecido pelo Twilio no Sandbox.
-
-
-### Passo 8: Rodar o script
+#### 4. Realizar o sorteio
 
 ```bash
-python script.py
+python sorteio.py
 ```
 
-Este comando irá rodar o sorteio de amigo oculto e enviar as mensagens para os números configurados via WhatsApp.
+#### 5. Enviar os resultados
+
+```bash
+python enviar_resultado_twilio.py
+```
+
+O script mostrará o status de cada mensagem (queued, sent, delivered, failed).
+
+---
+
+## Estrutura dos Scripts
+
+| Script | Descrição |
+|--------|-----------|
+| `sorteio.py` | Realiza o sorteio e salva em `sorteios.json` |
+| `enviar_whatsapp_web.py` | Envia resultados via WhatsApp Web (Chrome) |
+| `enviar_resultado_twilio.py` | Envia resultados via Twilio API |
+
+---
+
+## Dicas
+
+- **Teste antes:** Crie um `sorteios_teste.json` com uns 2 participantes para testar o envio
+- **Backup:** O sorteio fica salvo em `sorteios.json`, então se o envio falhar, não precisa sortear novamente
+- **Privacidade:** As mensagens têm espaçamento para esconder o nome do amigo secreto na pré-visualização
